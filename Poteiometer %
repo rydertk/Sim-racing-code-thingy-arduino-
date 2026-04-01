@@ -1,0 +1,19 @@
+void setup() {
+  // put your setup code here, to run once:
+Serial.begin(9600);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+//poteiometer 1
+int sensorValue1 = analogRead(A1);
+Serial.println(sensorValue1);
+
+//poteiometer 2
+int sensorValue2 = analogRead(A2);
+Serial.println(sensorValue2);
+
+//tracking delay 
+delay(200);
+}
