@@ -8,12 +8,17 @@ void loop() {
 
 //poteiometer 1
 int sensorValue1 = analogRead(A1);
-Serial.println(sensorValue1);
+int V1 = map(sensorValue1, 0, 1023, 0, 100);
+//Serial.print(sensorValue1);
+//Serial.println("%");
 
 //poteiometer 2
 int sensorValue2 = analogRead(A2);
-Serial.println(sensorValue2);
+int V2 = map(sensorValue2, 0, 1023, 0, 100);
+//Serial.println(sensorValue2);
+Serial.print(V2);
+Serial.println("%");
 
 //tracking delay 
-delay(200);
+delay(100);
 }
