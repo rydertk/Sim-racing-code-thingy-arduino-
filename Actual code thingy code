@@ -1,0 +1,56 @@
+#include <Joystick.h>
+
+#define POT_MIN  265
+#define POT_MAX  285
+
+#define PIN_SWITCH 18  // A0 on the Leonardo is pin 18
+
+// Reduced from 8 to 4 — still smooths jitter but adds less lag
+#define SMOOTH_SAMPLES 8
+
+int readings[SMOOTH_SAMPLES];
+int readIndex = 0;
+long total = 0;
+
+Joystick_ Joystick(
+  JOYSTICK_DEFAULT_REPORT_ID,
+  JOYSTICK_TYPE_JOYSTICK,
+  1, 0,  // changed 0 to 1 — we now have 1 button
+  true,
+  false, false, false, false, false, false, false, false, false, false
+);
+
+void setup() {
+  int firstRead = analogRead(A2);
+  for (int i = 0; i < SMOOTH_SAMPLES; i++) {
+    readings[i] = firstRead;
+  }
+  total = firstRead * SMOOTH_SAMPLES;
+
+  Joystick.setXAxisRange(0, 1023);
+  pinMode(PIN_SWITCH, INPUT_PULLUP);
+  Joystick.begin(false); // false = we control exactly when to send, no auto-send
+}
+
+void loop() {
+  total -= readings[readIndex];
+  readings[readIndex] = analogRead(A2);
+  total += readings[readIndex];
+  readIndex = (readIndex + 1) % SMOOTH_SAMPLES;
+
+  int smoothed = total / SMOOTH_SAMPLES;
+  int mapped = map(smoothed, POT_MIN, POT_MAX, 0, 1023);
+  mapped = constrain(mapped, 0, 1023);
+
+  Joystick.setXAxis(mapped);
+  // Read the switch — INPUT_PULLUP means LOW = pressed, HIGH = released
+bool pressed = (digitalRead(PIN_SWITCH) == LOW);
+Joystick.setButton(0, pressed);
+  Joystick.sendState(); // send immediately every loop
+
+Serial.print("Raw: ");
+  Serial.print(smoothed);
+  Serial.print("   →   Mapped: ");
+  Serial.println(mapped);
+  // No delay — run as fast as possible
+}
