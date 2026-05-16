@@ -1,3 +1,5 @@
+// Currently has: 1 poteiometer, 1 swtich
+
 #include <Joystick.h>
 
 #define POT_MIN  265
